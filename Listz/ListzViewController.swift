@@ -10,7 +10,7 @@ import UIKit
 
 class ListzViewController: UITableViewController {
 
-    let itemArray = ["Apples","Oranges","Bananas"]
+    var itemArray = ["Apples","Oranges","Bananas"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,5 +40,35 @@ class ListzViewController: UITableViewController {
         
         tableView.deselectRow(at: indexPath, animated: true)
     }
+    
+    //MARK: - Add New Items
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let addItemPopup = UIAlertController(title: "Add New Listz Item", message: "", preferredStyle: .alert)
+        
+        let addItemPopupAction = UIAlertAction(title: "Add Item", style: .default) { (action) in
+            print("Item Added: \(textField.text ?? "")")
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+        }
+        
+        let addItemPopupActionCancel = UIAlertAction(title: "Cancel", style: .cancel) { (action) in
+            print("Item Add Cancelled")
+        }
+        
+        addItemPopup.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        
+        addItemPopup.addAction(addItemPopupAction)
+        addItemPopup.addAction(addItemPopupActionCancel)
+        
+        present(addItemPopup, animated: true, completion: nil)
+        
+    }
+    
 }
 
