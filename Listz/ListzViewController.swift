@@ -11,10 +11,14 @@ import UIKit
 class ListzViewController: UITableViewController {
 
     var itemArray = ["Apples","Oranges","Bananas"]
+    let defaults = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        if let items = defaults.array(forKey: "ListzItemArray") as? [String] {
+            itemArray = items
+        }
     }
 
     //MARK: - TableView Datasource Methods
@@ -51,6 +55,7 @@ class ListzViewController: UITableViewController {
         let addItemPopupAction = UIAlertAction(title: "Add Item", style: .default) { (action) in
             print("Item Added: \(textField.text ?? "")")
             self.itemArray.append(textField.text!)
+            self.defaults.set(self.itemArray, forKey: "ListzItemArray")
             self.tableView.reloadData()
         }
         
