@@ -7,19 +7,25 @@
 //
 
 import UIKit
+import CoreData
 
 class ListzViewController: UITableViewController {
 
+    @IBOutlet weak var searchBar: UISearchBar!
     var itemArray = [Item]()
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var selectedCategory: Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        searchBar.delegate = self
         
-        print(dataFilePath!)
-        
-        loadItems()
-        
+        //loadItems()
     }
 
     //MARK: - TableView Datasource Methods
@@ -38,11 +44,10 @@ class ListzViewController: UITableViewController {
     
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        print("Row \(indexPath.row), item \(itemArray[indexPath.row])")
-        
+                
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
-        
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
         saveItems()
         
         tableView.deselectRow(at: indexPath, animated: true)
@@ -58,8 +63,10 @@ class ListzViewController: UITableViewController {
         let addItemPopupAction = UIAlertAction(title: "Add Item", style: .default) { (action) in
             print("Item Added: \(textField.text ?? "")")
             
-            let newItem = Item()
+            let newItem = Item(context: self.context)
             newItem.title = textField.text!
+            newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
 
             self.saveItems()
@@ -84,27 +91,56 @@ class ListzViewController: UITableViewController {
     
     //MARK: - Model manipulation Methods
     func saveItems() {
-        let encoder = PropertyListEncoder()
-        
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch {
-            print("Error encoding item array! \(error)")
+            print("Error saving item context: \(error)")
         }
-        
         tableView.reloadData()
     }
     
-    func loadItems(){
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            let decoder = PropertyListDecoder()
-            do {
-                itemArray = try decoder.decode([Item].self, from: data)
-            } catch {
-                print("Error reading Items.plist file: \(error)")
-            }
+    func loadItems(with request : NSFetchRequest<Item> = Item.fetchRequest(), predicate : NSPredicate? = nil){
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
         }
+        
+        do {
+            itemArray = try context.fetch(request)
+        } catch {
+            print("Error fetching item context: \(error)")
+        }
+        tableView.reloadData()
+    }
+
+}
+
+//MARK: - Search Bar Methods
+extension ListzViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        let request : NSFetchRequest<Item> = Item.fetchRequest()
+        
+        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+
+        print(searchBar.text!)
+        
+        loadItems(with: request, predicate: predicate)
+        
     }
     
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+            
+        }
+    }
 }
