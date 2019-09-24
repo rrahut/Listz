@@ -10,6 +10,7 @@
 		8128099223078E560065A2E4 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8128099123078E560065A2E4 /* CategoryViewController.swift */; };
 		813C85BE2314AEB500D6ADD9 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813C85BD2314AEB500D6ADD9 /* Category.swift */; };
 		813C85C02314AEC000D6ADD9 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 813C85BF2314AEC000D6ADD9 /* Item.swift */; };
+		8157C8D223209048003394D4 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8157C8D123209048003394D4 /* SwipeTableViewController.swift */; };
 		816D937F2300FADD00F04051 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816D937E2300FADD00F04051 /* AppDelegate.swift */; };
 		816D93812300FADD00F04051 /* ListzViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816D93802300FADD00F04051 /* ListzViewController.swift */; };
 		816D93842300FADD00F04051 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 816D93822300FADD00F04051 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 		8128099123078E560065A2E4 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 		813C85BD2314AEB500D6ADD9 /* Category.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Category.swift; sourceTree = "<group>"; };
 		813C85BF2314AEC000D6ADD9 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		8157C8D123209048003394D4 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		816D937B2300FADD00F04051 /* Listz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Listz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		816D937E2300FADD00F04051 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		816D93802300FADD00F04051 /* ListzViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListzViewController.swift; sourceTree = "<group>"; };
@@ -100,6 +102,7 @@
 				8128099123078E560065A2E4 /* CategoryViewController.swift */,
 				816D93802300FADD00F04051 /* ListzViewController.swift */,
 				816D937E2300FADD00F04051 /* AppDelegate.swift */,
+				8157C8D123209048003394D4 /* SwipeTableViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -248,6 +251,7 @@
 				813C85BE2314AEB500D6ADD9 /* Category.swift in Sources */,
 				816D93812300FADD00F04051 /* ListzViewController.swift in Sources */,
 				813C85C02314AEC000D6ADD9 /* Item.swift in Sources */,
+				8157C8D223209048003394D4 /* SwipeTableViewController.swift in Sources */,
 				816D937F2300FADD00F04051 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

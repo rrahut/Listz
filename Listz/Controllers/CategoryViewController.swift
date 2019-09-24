@@ -8,8 +8,9 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
     
     lazy var realm = try! Realm()
     
@@ -17,10 +18,33 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("File Manager Path: \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))")
+        //print("File Manager Path: \(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))")
+        tableView.rowHeight = 70.0
+        tableView.separatorStyle = .none
         loadCat()
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        guard let navBar = navigationController?.navigationBar else {fatalError("Fatal Error - Nav Controller does not exest")}
+        let bgCol = UIColor(hexString: "1D9BF6")! //UIColor.flatGray()
+        print("VWA")
+        navBar.barTintColor = bgCol
+        navBar.tintColor = ContrastColorOf(bgCol, returnFlat: true)
+
+        if #available(iOS 13.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithOpaqueBackground()
+            navBarAppearance.titleTextAttributes = [.foregroundColor: ContrastColorOf(bgCol, returnFlat: true)]
+            navBarAppearance.largeTitleTextAttributes = [.foregroundColor: ContrastColorOf(bgCol, returnFlat: true)]
+            navBarAppearance.backgroundColor = bgCol
+            navBar.standardAppearance = navBarAppearance
+            navBar.scrollEdgeAppearance = navBarAppearance
+        }
+
+    }
+
+    
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         
@@ -30,6 +54,7 @@ class CategoryViewController: UITableViewController {
             print("Category added: \(textField.text ?? "")")
             let cat = Category()
             cat.name = textField.text ?? "Default"
+            cat.cellColor = UIColor.randomFlat().hexValue()
             //self.catArray.append(cat)
             self.save(category: cat)
         }
@@ -72,9 +97,10 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        //let category = catArray[indexPath.row]
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text = catArray? [indexPath.row].name ?? "Create a category" //category.name
+        cell.backgroundColor = UIColor(hexString: catArray?[indexPath.row].cellColor ?? UIColor.flatGray().hexValue() )
+        cell.textLabel?.textColor = ContrastColorOf(UIColor(hexString: catArray?[indexPath.row].cellColor ?? UIColor.flatGray().hexValue() )!, returnFlat: true)
         return cell
     }
     
@@ -94,4 +120,55 @@ class CategoryViewController: UITableViewController {
         }
         tableView.reloadData()
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+        if let catForDeletion = self.catArray?[indexPath.row] {
+            do {
+                try self.realm.write {
+                    self.realm.delete(catForDeletion.items)
+                    self.realm.delete(catForDeletion)
+                }
+            } catch {
+                print("Error deleting data: \(error)")
+            }
+            //tableView.reloadData()
+        }
+    }
 }
+
+
+//MARK: - SwipeCell Delegate methods
+//extension CategoryViewController: SwipeTableViewCellDelegate {
+//    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+//        guard orientation == .right else { return nil }
+//
+//        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+//            // handle action by updating model with deletion
+//            print("Delete action on \(self.catArray![indexPath.row].name)")
+//
+//            if let catForDeletion = self.catArray?[indexPath.row] {
+//                do {
+//                    try self.realm.write {
+//                        self.realm.delete(catForDeletion)
+//                    }
+//                } catch {
+//                    print("Error deleting data: \(error)")
+//                }
+//                //tableView.reloadData()
+//            }
+//
+//        }
+//
+//        // customize the action appearance
+//        deleteAction.image = UIImage(named: "TrashIcon")
+//
+//        return [deleteAction]
+//    }
+//
+//    func tableView(_ tableView: UITableView, editActionsOptionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> SwipeOptions {
+//        var options = SwipeOptions()
+//        options.expansionStyle = .destructive
+//        return options
+//    }
+//
+//}
